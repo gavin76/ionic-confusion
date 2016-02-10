@@ -112,8 +112,7 @@ angular.module('conFusion.controllers', [])
                 console.log("index is " + index);
                 favoriteFactory.addToFavorites(index);
                 $ionicListDelegate.closeOptionButtons();
-            }
-
+            };
             
         }])
 
@@ -121,10 +120,6 @@ angular.module('conFusion.controllers', [])
             $scope.baseURL = baseURL;
             $scope.shouldShowDelete = false;
 
-/*            $ionicLoading.show({
-                template: '<ion-spinner></ion-spinner> Loading...'
-            });
-*/
             $scope.favorites = favorites;
 
             $scope.dishes = dishes;
@@ -152,7 +147,6 @@ angular.module('conFusion.controllers', [])
                 $scope.shouldShowDelete = !$scope.shouldShowDelete;
                 console.log($scope.shouldShowDelete);
             }
-            
             
 
         }])
@@ -213,9 +207,9 @@ angular.module('conFusion.controllers', [])
                 $scope.popover.remove();
             });
 
-            $scope.addFavorite = function() {
-                console.log("Add index to My Favorites: " + parseInt($stateParams.id))
-                favoriteFactory.addToFavorites(parseInt($stateParams.id));
+            $scope.addFavorite = function(index) {
+                console.log("Add index to My Favorites: " + index);
+                favoriteFactory.addToFavorites(index);
 
                 $scope.closePopover();
 
