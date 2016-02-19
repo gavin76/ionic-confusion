@@ -4,11 +4,15 @@
 // 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
 // 'starter.controllers' is found in controllers.js
-angular.module('conFusion', ['ionic', 'conFusion.controllers', 'conFusion.services'])
+angular.module('conFusion', ['ionic', 'ngCordova','conFusion.controllers', 'conFusion.services'])
 
-.run(function($ionicPlatform, $rootScope, $ionicLoading) {
+.run(function($ionicPlatform, $rootScope, $ionicLoading, $cordovaSplashscreen, $timeout) {
   $ionicPlatform.ready(function() {
 
+    $timeout(function() {
+      $cordovaSplashscreen.hide();
+    }, 3000);
+    
     $rootScope.$on('loading:show', function() {
       $ionicLoading.show({
         template: '<ion-spinner></ion-spinner> Loading ...'
@@ -67,7 +71,7 @@ angular.module('conFusion', ['ionic', 'conFusion.controllers', 'conFusion.servic
             return promotionFactory.get({id: 0});
           }],
           leader: ['corporateFactory', function(corporateFactory) {
-            return corporateFactory.get({id: 0});
+            return corporateFactory.get({id: 3});
           }]
         }
       }
