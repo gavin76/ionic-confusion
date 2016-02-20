@@ -1,6 +1,6 @@
 angular.module('conFusion.controllers', [])
 
-.controller('AppCtrl', function($scope, $ionicModal, $timeout, $localStorage, $ionicPlatform, $cordovaCamera) {
+.controller('AppCtrl', function($scope, $ionicModal, $timeout, $localStorage, $ionicPlatform, $cordovaCamera, $cordovaImagePicker) {
 
   // With the new view caching in Ionic, Controllers are only called
   // when they are recreated or on app start, instead of every page change.
@@ -95,6 +95,8 @@ angular.module('conFusion.controllers', [])
 
   // Cordova camera plugin
   $ionicPlatform.ready(function() {
+
+    // Options for $cordovaCamera
     var options = {
         quality: 50,
         destinationType: Camera.DestinationType.DATA_URL,
@@ -107,8 +109,17 @@ angular.module('conFusion.controllers', [])
         saveToPhotoAlbum: false
     };
 
+    // Options for $cordovaImagePicker
+    var imgpOptions = {
+        maximumImagesCount: 1,
+        width: 100,
+        height: 100,
+        quality: 80
+    };
+
     $scope.takePicture = function() {
         $cordovaCamera.getPicture(options).then(function(imageData) {
+            console.log(imageData);
             $scope.registration.imgSrc = "data:image/jpeg;base64," + imageData;
         }, function(err) {
             console.log(err);
@@ -116,7 +127,20 @@ angular.module('conFusion.controllers', [])
 
         $scope.registerform.show();
     }
-  })
+
+    $scope.getGallery = function() {
+
+        $cordovaImagePicker.getPictures(imgpOptions)
+          .then(function(imageData) {
+            console.log(imageData[0]);
+            $scope.registration.imgSrc = imageData[0];
+          }, function(err) {
+            console.log("Error getting photos; err: " + err);
+          });
+          $scope.registerform.show();
+    }
+  });
+
 })
 
 .controller('MenuController', ['$scope', 'dishes', 'favoriteFactory', 'baseURL', '$ionicListDelegate', '$ionicPlatform', '$cordovaLocalNotification', '$cordovaToast', function($scope, dishes, favoriteFactory, baseURL, $ionicListDelegate, $ionicPlatform, $cordovaLocalNotification, $cordovaToast) {
@@ -251,7 +275,7 @@ angular.module('conFusion.controllers', [])
             };
         }])
 
-        .controller('DishDetailController', ['$scope', '$stateParams', 'dish', 'menuFactory', 'favoriteFactory', 'baseURL', '$ionicPopover', '$ionicModal', function($scope, $stateParams, dish, menuFactory, favoriteFactory, baseURL, $ionicPopover, $ionicModal) {
+        .controller('DishDetailController', ['$scope', '$stateParams', 'dish', 'menuFactory', 'favoriteFactory', 'baseURL', '$ionicPopover', '$ionicModal', '$ionicPlatform', '$cordovaLocalNotification', '$cordovaToast', function($scope, $stateParams, dish, menuFactory, favoriteFactory, baseURL, $ionicPopover, $ionicModal, $ionicPlatform, $cordovaLocalNotification, $cordovaToast) {
             $scope.baseURL = baseURL;
             $scope.dish = dish;
 
@@ -278,6 +302,28 @@ angular.module('conFusion.controllers', [])
             $scope.addFavorite = function(index) {
                 console.log("Add index to My Favorites: " + index);
                 favoriteFactory.addToFavorites(index);
+
+                $ionicPlatform.ready(function() {
+                    console.log('Adding...' + $scope.dish.name);
+                    $cordovaLocalNotification.schedule({
+                        id: 1, 
+                        title: "Added Favorite",
+                        text: $scope.dish.name
+                    }).then(function() {
+                        console.log('Added Favorite ' + $scope.dish.name);
+                    },
+                    function() {
+                        console.log('Failed to add Notification');
+                    });
+
+                    $cordovaToast
+                        .show('Added Favorite ' + $scope.dish.name, 'long', 'bottom')
+                        .then(function(success) {
+                            // success
+                        }, function(error) {
+                            // error
+                        });
+                });
 
                 $scope.closePopover();
 
