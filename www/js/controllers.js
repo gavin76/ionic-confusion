@@ -207,7 +207,7 @@ angular.module('conFusion.controllers', [])
             
         }])
 
-        .controller('FavoritesController', ['$scope', 'dishes', 'favorites', 'favoriteFactory', 'baseURL', '$ionicListDelegate', '$ionicPopup', '$ionicLoading', function($scope, dishes, favorites, favoriteFactory, baseURL, $ionicListDelegate, $ionicPopup, $ionicLoading) {
+        .controller('FavoritesController', ['$scope', 'dishes', 'favorites', 'favoriteFactory', 'baseURL', '$ionicListDelegate', '$ionicPopup', '$ionicPlatform', '$cordovaVibration', function($scope, dishes, favorites, favoriteFactory, baseURL, $ionicListDelegate, $ionicPopup, $ionicPlatform, $cordovaVibration) {
             
             $scope.baseURL = baseURL;
             $scope.shouldShowDelete = false;
@@ -232,6 +232,12 @@ angular.module('conFusion.controllers', [])
                     if (res) {
                         console.log('Ok to delete');
                         favoriteFactory.deleteFromFavorites(index);
+
+                        $ionicPlatform.ready(function(){
+                            console.log("Send vibration");
+                            $cordovaVibration.vibrate(100);
+                        });
+
                     } else {
                         console.log('Canceled delete');
                     }
